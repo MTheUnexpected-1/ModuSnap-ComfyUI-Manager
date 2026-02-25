@@ -284,6 +284,27 @@ function toCompatibilityPayload(row: { key: string; item: ManagerCatalogItem }) 
   };
 }
 
+function prettifyNodeClassName(value: string) {
+  return value
+    .replace(/_/g, ' ')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function resolveNodeDisplayName(className: string, def: any) {
+  const displayName = String(def?.display_name || '').trim();
+  if (displayName && displayName !== className) {
+    return displayName;
+  }
+  const boundaries = (className.match(/[a-z0-9][A-Z]/g) || []).length;
+  if (boundaries >= 2 || className.includes('_')) {
+    return prettifyNodeClassName(className);
+  }
+  return displayName || className;
+}
+
 export default function NodesManagerModal({ isOpen, onClose, objectInfo, onNodeCatalogRefresh }: NodesManagerModalProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState<TabKey>('all');
@@ -330,7 +351,7 @@ export default function NodesManagerModal({ isOpen, onClose, objectInfo, onNodeC
     return Object.entries(objectInfo)
       .map(([className, def]: [string, any]) => ({
         className,
-        displayName: def?.display_name || className,
+        displayName: resolveNodeDisplayName(className, def),
         category: def?.category || 'uncategorized',
         rootCategory: (def?.category || 'uncategorized').split('/')[0].toLowerCase(),
       }))
