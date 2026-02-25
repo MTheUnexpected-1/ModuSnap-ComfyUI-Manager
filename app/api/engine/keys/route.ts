@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { resolveBackendDir } from '../../_lib/backendControl';
 
 type ApiKeyRecord = {
   id: string;
@@ -10,16 +11,6 @@ type ApiKeyRecord = {
   createdAt: string;
   revoked: boolean;
 };
-
-function resolveBackendDir() {
-  const fallback = path.resolve(process.cwd(), 'backend-comfyui');
-  const candidates = [
-    fallback,
-    path.resolve(process.cwd(), '..', '..', 'backend-comfyui'),
-    path.resolve(process.cwd(), '..', '..', '..', 'backend-comfyui'),
-  ];
-  return candidates.find((candidate) => fs.existsSync(candidate)) || fallback;
-}
 
 function getKeyStorePath() {
   const backendDir = resolveBackendDir();

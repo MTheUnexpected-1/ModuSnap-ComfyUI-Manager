@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'node:fs';
-import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-
-const BACKEND_URL = 'http://localhost:8188';
+import { BACKEND_URL, resolveBackendDir } from '../../_lib/backendControl';
 
 type DiagnosticIssue = {
   id: string;
@@ -54,23 +52,6 @@ function withCache<T>(slot: keyof typeof cache, ttlMs: number, compute: () => T)
   return value;
 }
 
-function resolveBackendDir() {
-  const fallback = path.resolve(process.cwd(), 'backend-comfyui');
-  const candidates = [
-    fallback,
-    path.resolve(process.cwd(), '..', '..', 'backend-comfyui'),
-    path.resolve(process.cwd(), '..', '..', '..', 'backend-comfyui'),
-  ];
-
-  for (const candidate of candidates) {
-    if (fs.existsSync(candidate)) {
-      return candidate;
-    }
-  }
-
-  return fallback;
-}
-
 async function getJson(url: string, timeoutMs = 5000) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -104,14 +85,14 @@ async function probeManagerEndpoints() {
 }
 
 function checkVenvAndManager(backendDir: string, deepDiagnostics: boolean) {
-  const venvPython = path.join(backendDir, 'venv', 'bin', 'python');
+  const venvPython = `${backendDir}/venv/bin/python`;
   if (!fs.existsSync(venvPython)) {
     return {
       venvFound: false,
       managerInstalled: false,
       managerImportRuntimeOk: false,
       managerRuntimeVersion: null as string | null,
-      managerSpecCheckOutput: 'backend-comfyui/venv not found',
+      managerSpecCheckOutput: `venv not found: ${venvPython}`,
       managerImportRuntimeOutput: 'venv missing',
       pipCheckPassed: false,
       pipCheckOutput: 'venv missing',
@@ -119,8 +100,8 @@ function checkVenvAndManager(backendDir: string, deepDiagnostics: boolean) {
   }
 
   if (!deepDiagnostics) {
-    const managerDir = path.join(backendDir, 'custom_nodes', 'ComfyUI-Manager');
-    const managerLegacyDir = path.join(backendDir, 'custom_nodes', 'comfyui-manager');
+    const managerDir = `${backendDir}/custom_nodes/ComfyUI-Manager`;
+    const managerLegacyDir = `${backendDir}/custom_nodes/comfyui-manager`;
     const managerInstalled = fs.existsSync(managerDir) || fs.existsSync(managerLegacyDir);
     return {
       venvFound: true,
@@ -178,9 +159,9 @@ function checkVenvAndManager(backendDir: string, deepDiagnostics: boolean) {
 }
 
 function getHardwareRuntimeInfo(backendDir: string, includeTorchProbe: boolean) {
-  const profilePath = path.join(backendDir, '.torch_profile');
-  const depsMarkerPath = path.join(backendDir, '.deps_installed');
-  const venvPython = path.join(backendDir, 'venv', 'bin', 'python');
+  const profilePath = `${backendDir}/.torch_profile`;
+  const depsMarkerPath = `${backendDir}/.deps_installed`;
+  const venvPython = `${backendDir}/venv/bin/python`;
 
   const hardwareProfile = fs.existsSync(profilePath) ? fs.readFileSync(profilePath, 'utf-8').trim() : null;
   const depsSyncedAt = fs.existsSync(depsMarkerPath) ? fs.statSync(depsMarkerPath).mtime.toISOString() : null;
@@ -209,7 +190,7 @@ function getHardwareRuntimeInfo(backendDir: string, includeTorchProbe: boolean) 
 }
 
 function getRecentLogErrors(backendDir: string) {
-  const logPath = path.join(backendDir, 'user', 'comfyui.log');
+  const logPath = `${backendDir}/user/comfyui.log`;
   if (!fs.existsSync(logPath)) {
     return { sslIssue: false, pipIssue: false, rembgIssue: false, rembgEvidence: '', logTail: '' };
   }
@@ -336,7 +317,7 @@ export async function GET(request: Request) {
       id: 'venv_missing',
       severity: 'error',
       title: 'Python venv is missing',
-      cause: 'backend-comfyui/venv does not exist.',
+      cause: `Resolved backend venv does not exist at ${backendDir}/venv.`,
       evidence: managerRuntime.managerSpecCheckOutput,
       fix: './start-backend.sh',
     });
@@ -348,7 +329,7 @@ export async function GET(request: Request) {
         title: 'Manager package not detected in venv',
         cause: 'Direct manager package detection in backend venv failed and no manager routes were reachable.',
         evidence: managerRuntime.managerSpecCheckOutput,
-        fix: 'cd backend-comfyui\nsource venv/bin/activate\npip install -r manager_requirements.txt',
+        fix: `cd "${backendDir}"\nsource venv/bin/activate\npip install -r manager_requirements.txt`,
       });
     }
 
@@ -359,7 +340,7 @@ export async function GET(request: Request) {
         title: 'Manager runtime import check failed',
         cause: 'Package exists but import failed in runtime context and manager routes were not reachable.',
         evidence: managerRuntime.managerImportRuntimeOutput,
-        fix: 'cd backend-comfyui\nsource venv/bin/activate\npip install -r requirements.txt\npip install -r manager_requirements.txt\n# then restart backend',
+        fix: `cd "${backendDir}"\nsource venv/bin/activate\npip install -r requirements.txt\npip install -r manager_requirements.txt\n# then restart backend`,
       });
     }
 
@@ -370,7 +351,7 @@ export async function GET(request: Request) {
         title: 'pip dependency conflicts detected',
         cause: '`pip check` reported dependency problems in backend venv.',
         evidence: managerRuntime.pipCheckOutput,
-        fix: 'cd backend-comfyui\nsource venv/bin/activate\npip install -r requirements.txt\npip install -r manager_requirements.txt\npip check',
+        fix: `cd "${backendDir}"\nsource venv/bin/activate\npip install -r requirements.txt\npip install -r manager_requirements.txt\npip check`,
       });
     }
   }
@@ -381,8 +362,8 @@ export async function GET(request: Request) {
       severity: 'warning',
       title: 'SSL certificate verification errors in backend log',
       cause: 'Manager registry fetch failed due to certificate verification.',
-      evidence: 'Detected CERTIFICATE_VERIFY_FAILED in backend-comfyui/user/comfyui.log',
-      fix: 'backend-comfyui/venv/bin/python -m pip install --upgrade certifi\nexport SSL_CERT_FILE=$(backend-comfyui/venv/bin/python -c "import certifi; print(certifi.where())")\n# restart backend',
+      evidence: `Detected CERTIFICATE_VERIFY_FAILED in ${backendDir}/user/comfyui.log`,
+      fix: `"${backendDir}/venv/bin/python" -m pip install --upgrade certifi\nexport SSL_CERT_FILE=$("${backendDir}/venv/bin/python" -c "import certifi; print(certifi.where())")\n# restart backend`,
     });
   }
 
@@ -393,7 +374,7 @@ export async function GET(request: Request) {
       title: 'pip-related errors found in backend log',
       cause: 'Recent backend log contains pip failure markers.',
       evidence: 'Detected pip + error/failed markers in recent log tail.',
-      fix: 'cd backend-comfyui\nsource venv/bin/activate\npip install -r requirements.txt\npip install -r manager_requirements.txt\npip check',
+      fix: `cd "${backendDir}"\nsource venv/bin/activate\npip install -r requirements.txt\npip install -r manager_requirements.txt\npip check`,
     });
   }
 
@@ -404,7 +385,7 @@ export async function GET(request: Request) {
       title: 'Custom node runtime dependency missing (rembg/onnxruntime)',
       cause: 'A loaded custom node requires rembg and onnxruntime but backend environment does not have a compatible runtime.',
       evidence: logInfo.rembgEvidence || 'Detected rembg/onnxruntime missing markers in backend log.',
-      fix: 'cd backend-comfyui\nsource venv/bin/activate\npip install "rembg[cpu]" onnxruntime\n# NVIDIA: pip install "rembg[gpu]" onnxruntime-gpu\n# backend restarts automatically from Apply Fix',
+      fix: `cd "${backendDir}"\nsource venv/bin/activate\npip install "rembg[cpu]" onnxruntime\n# NVIDIA: pip install "rembg[gpu]" onnxruntime-gpu\n# backend restarts automatically from Apply Fix`,
     });
   }
 

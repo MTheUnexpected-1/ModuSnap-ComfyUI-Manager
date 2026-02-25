@@ -1,0 +1,129 @@
+/**
+ * Static catalog of all known ComfyUI settings.
+ * Extracted from ComfyUI 8188 frontend runtime (window.app.extensionManager.setting.settings).
+ * Used as a fallback when Playwright-based scraping fails.
+ */
+export type CatalogEntry = {
+    id: string;
+    name: string;
+    type: string;
+    category?: string[];
+    defaultValue?: unknown;
+    tooltip?: string;
+    options?: unknown[];
+    experimental?: boolean;
+};
+
+export const COMFY_DEFAULT_CATALOG: Record<string, CatalogEntry> = {
+    /* ── Comfy ─────────────────────────────────────────────────────── */
+    'Comfy.Validation.Workflows': { id: 'Comfy.Validation.Workflows', name: 'Validate workflows', type: 'boolean', defaultValue: false },
+    'Comfy.NodeSearchBoxImpl': { id: 'Comfy.NodeSearchBoxImpl', name: 'Node search box implementation', type: 'combo', category: ['Comfy', 'Node Search Box', 'Implementation'], defaultValue: 'default', options: ['default', 'litegraph (legacy)'], experimental: true },
+    'Comfy.NodeSearchBoxImpl.NodePreview': { id: 'Comfy.NodeSearchBoxImpl.NodePreview', name: 'Node preview', type: 'boolean', category: ['Comfy', 'Node Search Box', 'NodePreview'], defaultValue: true, tooltip: 'Only applies to the default implementation' },
+    'Comfy.NodeSearchBoxImpl.ShowCategory': { id: 'Comfy.NodeSearchBoxImpl.ShowCategory', name: 'Show node category in search results', type: 'boolean', category: ['Comfy', 'Node Search Box', 'ShowCategory'], defaultValue: true, tooltip: 'Only applies to the default implementation' },
+    'Comfy.NodeSearchBoxImpl.ShowIdName': { id: 'Comfy.NodeSearchBoxImpl.ShowIdName', name: 'Show node id name in search results', type: 'boolean', category: ['Comfy', 'Node Search Box', 'ShowIdName'], defaultValue: false, tooltip: 'Only applies to the default implementation' },
+    'Comfy.NodeSearchBoxImpl.ShowNodeFrequency': { id: 'Comfy.NodeSearchBoxImpl.ShowNodeFrequency', name: 'Show node frequency in search results', type: 'boolean', category: ['Comfy', 'Node Search Box', 'ShowNodeFrequency'], defaultValue: false, tooltip: 'Only applies to the default implementation' },
+    'Comfy.NodeBadge.ShowApiPricing': { id: 'Comfy.NodeBadge.ShowApiPricing', name: 'Show API node pricing badge', type: 'boolean', category: ['Comfy', 'API Nodes'], defaultValue: true },
+    'Comfy.DevMode': { id: 'Comfy.DevMode', name: 'Enable dev mode options (API save, etc.)', type: 'boolean', defaultValue: false },
+    'Comfy.Execution.PreviewMethod': { id: 'Comfy.Execution.PreviewMethod', name: 'Live preview method', type: 'combo', category: ['Comfy', 'Execution', 'PreviewMethod'], defaultValue: 'default', tooltip: 'Live preview method during image generation. "default" uses the server CLI setting.', options: ['default', 'none', 'auto', 'latent2rgb', 'taesd'] },
+    'Comfy.ModelLibrary.AutoLoadAll': { id: 'Comfy.ModelLibrary.AutoLoadAll', name: 'Automatically load all model folders', type: 'boolean', defaultValue: false, tooltip: 'If true, all folders will load as soon as you open the model library.' },
+    'Comfy.ModelLibrary.NameFormat': { id: 'Comfy.ModelLibrary.NameFormat', name: 'What name to display in the model library tree view', type: 'combo', defaultValue: 'title', tooltip: 'Select "filename" or "title" to render the model list.', options: ['filename', 'title'] },
+    'Comfy.Node.ShowDeprecated': { id: 'Comfy.Node.ShowDeprecated', name: 'Show deprecated nodes in search', type: 'boolean', defaultValue: false, tooltip: 'Deprecated nodes are hidden by default in the UI, but remain functional in existing workflows that use them.' },
+    'Comfy.Node.ShowExperimental': { id: 'Comfy.Node.ShowExperimental', name: 'Show experimental nodes in search', type: 'boolean', defaultValue: true, tooltip: 'Experimental nodes are marked as such in the UI.' },
+    'Comfy.Notification.ShowVersionUpdates': { id: 'Comfy.Notification.ShowVersionUpdates', name: 'Show version updates', type: 'boolean', category: ['Comfy', 'Notification Preferences'], defaultValue: true, tooltip: 'Show updates for new models, and major new features.' },
+    'Comfy.ConfirmClear': { id: 'Comfy.ConfirmClear', name: 'Require confirmation when clearing workflow', type: 'boolean', category: ['Comfy', 'Workflow', 'ConfirmClear'], defaultValue: true },
+    'Comfy.PromptFilename': { id: 'Comfy.PromptFilename', name: 'Prompt for filename when saving workflow', type: 'boolean', category: ['Comfy', 'Workflow', 'PromptFilename'], defaultValue: true },
+    'Comfy.Window.UnloadConfirmation': { id: 'Comfy.Window.UnloadConfirmation', name: 'Show confirmation when closing window', type: 'boolean', defaultValue: true },
+    'Comfy.Workflow.ShowMissingNodesWarning': { id: 'Comfy.Workflow.ShowMissingNodesWarning', name: 'Show missing nodes warning', type: 'boolean', defaultValue: true },
+    'Comfy.Workflow.ShowMissingModelsWarning': { id: 'Comfy.Workflow.ShowMissingModelsWarning', name: 'Show missing models warning', type: 'boolean', defaultValue: true, experimental: true },
+    'Comfy.Workflow.WarnBlueprintOverwrite': { id: 'Comfy.Workflow.WarnBlueprintOverwrite', name: 'Require confirmation to overwrite an existing subgraph blueprint', type: 'boolean', defaultValue: true },
+    'Comfy.Workflow.SortNodeIdOnSave': { id: 'Comfy.Workflow.SortNodeIdOnSave', name: 'Sort node IDs when saving workflow', type: 'boolean', defaultValue: false },
+    'Comfy.Workflow.ConfirmDelete': { id: 'Comfy.Workflow.ConfirmDelete', name: 'Show confirmation when deleting workflows', type: 'boolean', defaultValue: true },
+    'Comfy.Workflow.AutoSave': { id: 'Comfy.Workflow.AutoSave', name: 'Auto Save', type: 'combo', defaultValue: 'off', options: ['off', 'after delay'] },
+    'Comfy.Workflow.AutoSaveDelay': { id: 'Comfy.Workflow.AutoSaveDelay', name: 'Auto Save Delay (ms)', type: 'number', defaultValue: 1000, tooltip: 'Only applies if Auto Save is set to "after delay".' },
+    'Comfy.Workflow.Persist': { id: 'Comfy.Workflow.Persist', name: 'Persist workflow state and restore on page (re)load', type: 'boolean', defaultValue: true },
+    'Comfy.EnableWorkflowViewRestore': { id: 'Comfy.EnableWorkflowViewRestore', name: 'Save and restore canvas position and zoom level in workflows', type: 'boolean', category: ['Comfy', 'Workflow', 'EnableWorkflowViewRestore'], defaultValue: true },
+    'Comfy.WidgetControlMode': { id: 'Comfy.WidgetControlMode', name: 'Widget control mode', type: 'combo', category: ['Comfy', 'Node Widget', 'WidgetControlMode'], defaultValue: 'after', tooltip: 'Controls when widget values are updated (randomize/increment/decrement).', options: ['before', 'after'] },
+    'Comfy.TextareaWidget.Spellcheck': { id: 'Comfy.TextareaWidget.Spellcheck', name: 'Textarea widget spellcheck', type: 'boolean', category: ['Comfy', 'Node Widget', 'TextareaWidget', 'Spellcheck'], defaultValue: false },
+    'Comfy.UseNewMenu': { id: 'Comfy.UseNewMenu', name: 'Use new menu', type: 'combo', category: ['Comfy', 'Menu', 'UseNewMenu'], defaultValue: 'Top', tooltip: 'Enable the redesigned top menu bar.', options: ['Disabled', 'Top'] },
+    'Comfy.Workflow.WorkflowTabsPosition': { id: 'Comfy.Workflow.WorkflowTabsPosition', name: 'Opened workflows position', type: 'combo', defaultValue: 'Topbar', options: ['Sidebar', 'Topbar'] },
+    'Comfy.QueueButton.BatchCountLimit': { id: 'Comfy.QueueButton.BatchCountLimit', name: 'Batch count limit', type: 'number', defaultValue: 100, tooltip: 'The maximum number of tasks added to the queue at one button click' },
+    'Comfy.Queue.MaxHistoryItems': { id: 'Comfy.Queue.MaxHistoryItems', name: 'Queue history size', type: 'slider', defaultValue: 64, tooltip: 'The maximum number of tasks that show in the queue history.' },
+    'Comfy.Queue.QPOV2': { id: 'Comfy.Queue.QPOV2', name: 'Use the unified job queue in the Assets side panel', type: 'boolean', category: ['Comfy', 'Queue', 'Layout'], defaultValue: false, tooltip: 'Replaces the floating job queue panel.', experimental: true },
+    'Comfy.VueNodes.Enabled': { id: 'Comfy.VueNodes.Enabled', name: 'Modern Node Design (Nodes 2.0)', type: 'boolean', category: ['Comfy', 'Nodes 2.0', 'VueNodesEnabled'], defaultValue: false, tooltip: 'Modern: DOM-based rendering with enhanced interactivity.', experimental: true },
+    'Comfy.VueNodes.AutoScaleLayout': { id: 'Comfy.VueNodes.AutoScaleLayout', name: 'Auto-scale layout (Nodes 2.0)', type: 'boolean', category: ['Comfy', 'Nodes 2.0', 'AutoScaleLayout'], defaultValue: true, tooltip: 'Automatically scale node positions when switching to Nodes 2.0 rendering.', experimental: true },
+    'Comfy.EditAttention.Delta': { id: 'Comfy.EditAttention.Delta', name: 'Ctrl+up/down precision', type: 'slider', category: ['Comfy', 'EditTokenWeight', 'Delta'], defaultValue: 0.05 },
+    'Comfy.NodeSuggestions.number': { id: 'Comfy.NodeSuggestions.number', name: 'Number of nodes suggestions', type: 'slider', category: ['Comfy', 'Node Search Box', 'NodeSuggestions'], defaultValue: 5, tooltip: 'Only for litegraph searchbox/context menu' },
+    'Comfy.NodeReplacement.Enabled': { id: 'Comfy.NodeReplacement.Enabled', name: 'Enable node replacement suggestions', type: 'boolean', category: ['Comfy', 'Workflow', 'NodeReplacement'], defaultValue: false, tooltip: 'When enabled, missing nodes with known replacements will be shown.', experimental: true },
+    'Comfy.Graph.DeduplicateSubgraphNodeIds': { id: 'Comfy.Graph.DeduplicateSubgraphNodeIds', name: 'Deduplicate subgraph node IDs', type: 'boolean', category: ['Comfy', 'Graph', 'Subgraph'], defaultValue: false, tooltip: 'Automatically reassign duplicate node IDs in subgraphs.', experimental: true },
+    'Comfy.Locale': { id: 'Comfy.Locale', name: 'Language', type: 'combo', options: [{ value: 'en', text: 'English' }, { value: 'zh', text: '中文' }, { value: 'zh-TW', text: '繁體中文' }, { value: 'ru', text: 'Русский' }, { value: 'ja', text: '日本語' }, { value: 'ko', text: '한국어' }, { value: 'fr', text: 'Français' }, { value: 'es', text: 'Español' }, { value: 'ar', text: 'عربي' }, { value: 'tr', text: 'Türkçe' }, { value: 'pt-BR', text: 'Português (BR)' }, { value: 'fa', text: 'فارسی' }] },
+
+    /* ── LiteGraph ──────────────────────────────────────────────────── */
+    'Comfy.LinkRelease.Action': { id: 'Comfy.LinkRelease.Action', name: 'Action on link release (No modifier)', type: 'combo', category: ['LiteGraph', 'LinkRelease', 'Action'], defaultValue: 'context menu', options: ['context menu', 'search box', 'no action'] },
+    'Comfy.LinkRelease.ActionShift': { id: 'Comfy.LinkRelease.ActionShift', name: 'Action on link release (Shift)', type: 'combo', category: ['LiteGraph', 'LinkRelease', 'ActionShift'], defaultValue: 'search box', options: ['context menu', 'search box', 'no action'] },
+    'Comfy.Canvas.NavigationMode': { id: 'Comfy.Canvas.NavigationMode', name: 'Navigation Mode', type: 'combo', category: ['LiteGraph', 'Canvas Navigation', 'NavigationMode'], defaultValue: 'legacy', options: [{ value: 'standard', text: 'Standard (New)' }, { value: 'legacy', text: 'Drag Navigation' }, { value: 'custom', text: 'Custom' }] },
+    'Comfy.Canvas.LeftMouseClickBehavior': { id: 'Comfy.Canvas.LeftMouseClickBehavior', name: 'Left Mouse Click Behavior', type: 'radio', category: ['LiteGraph', 'Canvas Navigation', 'LeftMouseClickBehavior'], defaultValue: 'panning', options: [{ value: 'panning', text: 'Panning' }, { value: 'select', text: 'Select' }] },
+    'Comfy.Canvas.MouseWheelScroll': { id: 'Comfy.Canvas.MouseWheelScroll', name: 'Mouse Wheel Scroll', type: 'radio', category: ['LiteGraph', 'Canvas Navigation', 'MouseWheelScroll'], defaultValue: 'zoom', options: [{ value: 'panning', text: 'Panning' }, { value: 'zoom', text: 'Zoom in/out' }] },
+    'Comfy.Graph.CanvasInfo': { id: 'Comfy.Graph.CanvasInfo', name: 'Show canvas info on bottom left corner (fps, etc.)', type: 'boolean', category: ['LiteGraph', 'Canvas', 'CanvasInfo'], defaultValue: true },
+    'Comfy.Graph.CanvasMenu': { id: 'Comfy.Graph.CanvasMenu', name: 'Show graph canvas menu', type: 'boolean', category: ['LiteGraph', 'Canvas', 'CanvasMenu'], defaultValue: true },
+    'Comfy.Graph.ZoomSpeed': { id: 'Comfy.Graph.ZoomSpeed', name: 'Canvas zoom speed', type: 'slider', category: ['LiteGraph', 'Canvas', 'ZoomSpeed'], defaultValue: 1.1 },
+    'Comfy.Graph.CtrlShiftZoom': { id: 'Comfy.Graph.CtrlShiftZoom', name: 'Enable fast-zoom shortcut (Ctrl + Shift + Drag)', type: 'boolean', category: ['LiteGraph', 'Canvas', 'CtrlShiftZoom'], defaultValue: true },
+    'Comfy.Graph.LiveSelection': { id: 'Comfy.Graph.LiveSelection', name: 'Live selection', type: 'boolean', category: ['LiteGraph', 'Canvas', 'LiveSelection'], defaultValue: false, tooltip: 'When enabled, nodes are selected/deselected in real-time as you drag the selection rectangle.' },
+    'Comfy.Canvas.SelectionToolbox': { id: 'Comfy.Canvas.SelectionToolbox', name: 'Show selection toolbox', type: 'boolean', category: ['LiteGraph', 'Canvas', 'SelectionToolbox'], defaultValue: true, tooltip: 'Display a floating toolbar when nodes are selected.' },
+    'Comfy.SnapToGrid.GridSize': { id: 'Comfy.SnapToGrid.GridSize', name: 'Snap to grid size', type: 'slider', category: ['LiteGraph', 'Canvas', 'GridSize'], defaultValue: 10, tooltip: 'When dragging and resizing nodes while holding shift they will be aligned to the grid.' },
+    'pysssss.SnapToGrid': { id: 'pysssss.SnapToGrid', name: 'Always snap to grid', type: 'boolean', category: ['LiteGraph', 'Canvas', 'AlwaysSnapToGrid'], defaultValue: false, tooltip: 'When enabled, nodes will automatically align to the grid.' },
+    'Comfy.LinkRenderMode': { id: 'Comfy.LinkRenderMode', name: 'Link Render Mode', type: 'combo', category: ['LiteGraph', 'Graph', 'LinkRenderMode'], defaultValue: 2, tooltip: 'Controls the appearance and visibility of connection links between nodes on the canvas.', options: [{ value: 0, text: 'Straight' }, { value: 1, text: 'Linear' }, { value: 2, text: 'Spline' }, { value: -1, text: 'Hidden' }] },
+    'Comfy.Graph.LinkMarkers': { id: 'Comfy.Graph.LinkMarkers', name: 'Link midpoint markers', type: 'combo', category: ['LiteGraph', 'Link', 'LinkMarkers'], defaultValue: 1, options: [{ value: 0, text: 'None' }, { value: 1, text: 'Circle' }, { value: 2, text: 'Arrow' }] },
+    'Comfy.Node.DoubleClickTitleToEdit': { id: 'Comfy.Node.DoubleClickTitleToEdit', name: 'Double click node title to edit', type: 'boolean', category: ['LiteGraph', 'Node', 'DoubleClickTitleToEdit'], defaultValue: true },
+    'Comfy.Node.AllowImageSizeDraw': { id: 'Comfy.Node.AllowImageSizeDraw', name: 'Show width × height below the image preview', type: 'boolean', category: ['LiteGraph', 'Node Widget', 'AllowImageSizeDraw'], defaultValue: true },
+    'Comfy.Node.AutoSnapLinkToSlot': { id: 'Comfy.Node.AutoSnapLinkToSlot', name: 'Auto snap link to node slot', type: 'boolean', category: ['LiteGraph', 'Node', 'AutoSnapLinkToSlot'], defaultValue: true, tooltip: 'When dragging a link over a node, the link automatically snap to a viable input slot.' },
+    'Comfy.Node.SnapHighlightsNode': { id: 'Comfy.Node.SnapHighlightsNode', name: 'Snap highlights node', type: 'boolean', category: ['LiteGraph', 'Node', 'SnapHighlightsNode'], defaultValue: true, tooltip: 'When dragging a link over a node with viable input slot, highlight the node.' },
+    'Comfy.Node.BypassAllLinksOnDelete': { id: 'Comfy.Node.BypassAllLinksOnDelete', name: 'Keep all links when deleting nodes', type: 'boolean', category: ['LiteGraph', 'Node', 'BypassAllLinksOnDelete'], defaultValue: true, tooltip: 'When deleting a node, attempt to reconnect all of its input and output links.' },
+    'Comfy.Node.MiddleClickRerouteNode': { id: 'Comfy.Node.MiddleClickRerouteNode', name: 'Middle-click creates a new Reroute node', type: 'boolean', category: ['LiteGraph', 'Node', 'MiddleClickRerouteNode'], defaultValue: true },
+    'Comfy.Node.AlwaysShowAdvancedWidgets': { id: 'Comfy.Node.AlwaysShowAdvancedWidgets', name: 'Always show advanced widgets on all nodes', type: 'boolean', category: ['LiteGraph', 'Node Widget', 'AlwaysShowAdvancedWidgets'], defaultValue: false, tooltip: 'When enabled, advanced widgets are always visible.' },
+    'Comfy.DOMClippingEnabled': { id: 'Comfy.DOMClippingEnabled', name: 'Enable DOM element clipping (enabling may reduce performance)', type: 'boolean', category: ['LiteGraph', 'Node', 'DOMClippingEnabled'], defaultValue: true },
+    'Comfy.EnableTooltips': { id: 'Comfy.EnableTooltips', name: 'Enable Tooltips', type: 'boolean', category: ['LiteGraph', 'Node', 'EnableTooltips'], defaultValue: true },
+    'Comfy.NodeBadge.NodeSourceBadgeMode': { id: 'Comfy.NodeBadge.NodeSourceBadgeMode', name: 'Node source badge mode', type: 'combo', category: ['LiteGraph', 'Node', 'NodeSourceBadgeMode'], defaultValue: 'Hide built-in', options: ['None', 'Show all', 'Hide built-in'] },
+    'Comfy.NodeBadge.NodeIdBadgeMode': { id: 'Comfy.NodeBadge.NodeIdBadgeMode', name: 'Node ID badge mode', type: 'combo', category: ['LiteGraph', 'Node', 'NodeIdBadgeMode'], defaultValue: 'None', options: ['None', 'Show all'] },
+    'Comfy.NodeBadge.NodeLifeCycleBadgeMode': { id: 'Comfy.NodeBadge.NodeLifeCycleBadgeMode', name: 'Node life cycle badge mode', type: 'combo', category: ['LiteGraph', 'Node', 'NodeLifeCycleBadgeMode'], defaultValue: 'Show all', options: ['None', 'Show all'] },
+    'Comfy.GroupSelectedNodes.Padding': { id: 'Comfy.GroupSelectedNodes.Padding', name: 'Group selected nodes padding', type: 'slider', category: ['LiteGraph', 'Group', 'Padding'], defaultValue: 10 },
+    'Comfy.Group.DoubleClickTitleToEdit': { id: 'Comfy.Group.DoubleClickTitleToEdit', name: 'Double click group title to edit', type: 'boolean', category: ['LiteGraph', 'Group', 'DoubleClickTitleToEdit'], defaultValue: true },
+    'Comfy.PreviewFormat': { id: 'Comfy.PreviewFormat', name: 'Preview image format', type: 'text', category: ['LiteGraph', 'Node Widget', 'PreviewFormat'], defaultValue: '', tooltip: 'When displaying a preview, convert it to a lightweight image, e.g. webp, jpeg, webp;50, etc.' },
+    'Comfy.DisableSliders': { id: 'Comfy.DisableSliders', name: 'Disable node widget sliders', type: 'boolean', category: ['LiteGraph', 'Node Widget', 'DisableSliders'], defaultValue: false },
+    'Comfy.DisableFloatRounding': { id: 'Comfy.DisableFloatRounding', name: 'Disable default float widget rounding', type: 'boolean', category: ['LiteGraph', 'Node Widget', 'DisableFloatRounding'], defaultValue: false, tooltip: '(requires page reload)' },
+    'Comfy.FloatRoundingPrecision': { id: 'Comfy.FloatRoundingPrecision', name: 'Float widget rounding decimal places [0 = auto]', type: 'slider', category: ['LiteGraph', 'Node Widget', 'FloatRoundingPrecision'], defaultValue: 0, tooltip: '(requires page reload)' },
+    'Comfy.Pointer.ClickDrift': { id: 'Comfy.Pointer.ClickDrift', name: 'Pointer click drift (maximum distance)', type: 'slider', category: ['LiteGraph', 'Pointer', 'ClickDrift'], defaultValue: 6, tooltip: 'If the pointer moves more than this distance while holding a button down, it is considered dragging.', experimental: true },
+    'Comfy.Pointer.ClickBufferTime': { id: 'Comfy.Pointer.ClickBufferTime', name: 'Pointer click drift delay', type: 'slider', category: ['LiteGraph', 'Pointer', 'ClickBufferTime'], defaultValue: 150, tooltip: 'After pressing a pointer button down, this is the maximum time (in ms) that pointer movement can be ignored for.', experimental: true },
+    'Comfy.Pointer.DoubleClickTime': { id: 'Comfy.Pointer.DoubleClickTime', name: 'Double click interval (maximum)', type: 'slider', category: ['LiteGraph', 'Pointer', 'DoubleClickTime'], defaultValue: 300, tooltip: 'The maximum time in milliseconds between the two clicks of a double-click.' },
+    'LiteGraph.Node.TooltipDelay': { id: 'LiteGraph.Node.TooltipDelay', name: 'Tooltip Delay', type: 'number', defaultValue: 500 },
+    'LiteGraph.Canvas.MaximumFps': { id: 'LiteGraph.Canvas.MaximumFps', name: 'Maximum FPS', type: 'slider', defaultValue: 0, tooltip: 'The maximum frames per second that the canvas is allowed to render. If 0, the screen refresh rate is used.' },
+    'LiteGraph.Canvas.MinFontSizeForLOD': { id: 'LiteGraph.Canvas.MinFontSizeForLOD', name: 'Zoom Node Level of Detail - font size threshold', type: 'slider', defaultValue: 8, tooltip: 'Controls when the nodes switch to low quality LOD rendering.' },
+    'LiteGraph.Reroute.SplineOffset': { id: 'LiteGraph.Reroute.SplineOffset', name: 'Reroute spline offset', type: 'slider', defaultValue: 20, tooltip: 'The bezier control point offset from the reroute centre point' },
+    'LiteGraph.Node.DefaultPadding': { id: 'LiteGraph.Node.DefaultPadding', name: 'Always shrink new nodes', type: 'boolean', defaultValue: false, tooltip: 'Resize nodes to the smallest possible size when created.' },
+    'LiteGraph.ContextMenu.Scaling': { id: 'LiteGraph.ContextMenu.Scaling', name: 'Scale node combo widget menus (lists) when zoomed in', type: 'boolean', defaultValue: false },
+
+    /* ── Appearance ─────────────────────────────────────────────────── */
+    'Comfy.Sidebar.Location': { id: 'Comfy.Sidebar.Location', name: 'Sidebar location', type: 'combo', category: ['Appearance', 'Sidebar', 'Location'], defaultValue: 'left', options: ['left', 'right'] },
+    'Comfy.Sidebar.Size': { id: 'Comfy.Sidebar.Size', name: 'Sidebar size', type: 'combo', category: ['Appearance', 'Sidebar', 'Size'], options: ['normal', 'small'] },
+    'Comfy.Sidebar.UnifiedWidth': { id: 'Comfy.Sidebar.UnifiedWidth', name: 'Unified sidebar width', type: 'boolean', category: ['Appearance', 'Sidebar', 'UnifiedWidth'], defaultValue: true },
+    'Comfy.Sidebar.Style': { id: 'Comfy.Sidebar.Style', name: 'Sidebar style', type: 'combo', category: ['Appearance', 'Sidebar', 'Style'], defaultValue: 'connected', options: ['floating', 'connected'] },
+    'Comfy.TextareaWidget.FontSize': { id: 'Comfy.TextareaWidget.FontSize', name: 'Textarea widget font size', type: 'slider', category: ['Appearance', 'Node Widget', 'TextareaWidget', 'FontSize'], defaultValue: 10 },
+    'Comfy.Node.Opacity': { id: 'Comfy.Node.Opacity', name: 'Node opacity', type: 'slider', category: ['Appearance', 'Node', 'Opacity'], defaultValue: 1 },
+    'Comfy.TreeExplorer.ItemPadding': { id: 'Comfy.TreeExplorer.ItemPadding', name: 'Tree explorer item padding', type: 'slider', category: ['Appearance', 'Tree Explorer', 'ItemPadding'], defaultValue: 2 },
+    'Comfy.UI.TabBarLayout': { id: 'Comfy.UI.TabBarLayout', name: 'Tab Bar Layout', type: 'combo', category: ['Appearance', 'General'], defaultValue: 'Default', tooltip: 'Controls the layout of the tab bar.', options: ['Default', 'Integrated'] },
+    'Comfy.Canvas.BackgroundImage': { id: 'Comfy.Canvas.BackgroundImage', name: 'Canvas background image', type: 'text', category: ['Appearance', 'Canvas', 'Background'], defaultValue: '', tooltip: 'Image URL for the canvas background.' },
+
+    /* ── Mask Editor ────────────────────────────────────────────────── */
+    'Comfy.MaskEditor.BrushAdjustmentSpeed': { id: 'Comfy.MaskEditor.BrushAdjustmentSpeed', name: 'Brush adjustment speed multiplier', type: 'slider', category: ['Mask Editor', 'BrushAdjustment', 'Sensitivity'], defaultValue: 1, tooltip: 'Controls how quickly the brush size and hardness change when adjusting.' },
+    'Comfy.MaskEditor.UseDominantAxis': { id: 'Comfy.MaskEditor.UseDominantAxis', name: 'Lock brush adjustment to dominant axis', type: 'boolean', category: ['Mask Editor', 'BrushAdjustment', 'UseDominantAxis'], defaultValue: true, tooltip: 'When enabled, brush adjustments will only affect size OR hardness based on which direction you move more.' },
+
+    /* ── 3D ─────────────────────────────────────────────────────────── */
+    'Comfy.Load3D.ShowGrid': { id: 'Comfy.Load3D.ShowGrid', name: 'Initial Grid Visibility', type: 'boolean', category: ['3D', 'Scene', 'Initial Grid Visibility'], defaultValue: true, experimental: true },
+    'Comfy.Load3D.BackgroundColor': { id: 'Comfy.Load3D.BackgroundColor', name: 'Initial Background Color', type: 'color', category: ['3D', 'Scene', 'Initial Background Color'], defaultValue: '282828', experimental: true },
+    'Comfy.Load3D.CameraType': { id: 'Comfy.Load3D.CameraType', name: 'Initial Camera Type', type: 'combo', category: ['3D', 'Camera', 'Initial Camera Type'], defaultValue: 'perspective', options: ['perspective', 'orthographic'], experimental: true },
+    'Comfy.Load3D.LightIntensity': { id: 'Comfy.Load3D.LightIntensity', name: 'Initial Light Intensity', type: 'number', category: ['3D', 'Light', 'Initial Light Intensity'], defaultValue: 3, experimental: true },
+    'Comfy.Load3D.LightIntensityMaximum': { id: 'Comfy.Load3D.LightIntensityMaximum', name: 'Light Intensity Maximum', type: 'number', category: ['3D', 'Light', 'Light Intensity Maximum'], defaultValue: 10, experimental: true },
+    'Comfy.Load3D.LightIntensityMinimum': { id: 'Comfy.Load3D.LightIntensityMinimum', name: 'Light Intensity Minimum', type: 'number', category: ['3D', 'Light', 'Light Intensity Minimum'], defaultValue: 1, experimental: true },
+    'Comfy.Load3D.LightAdjustmentIncrement': { id: 'Comfy.Load3D.LightAdjustmentIncrement', name: 'Light Adjustment Increment', type: 'slider', category: ['3D', 'Light', 'Light Adjustment Increment'], defaultValue: 0.5, experimental: true },
+    'Comfy.Load3D.3DViewerEnable': { id: 'Comfy.Load3D.3DViewerEnable', name: 'Enable 3D Viewer (Beta)', type: 'boolean', category: ['3D', '3DViewer', 'Enable'], defaultValue: false, tooltip: 'Enables the 3D Viewer (Beta) for selected nodes.', experimental: true },
+    'Comfy.Load3D.PLYEngine': { id: 'Comfy.Load3D.PLYEngine', name: 'PLY Engine', type: 'combo', category: ['3D', 'PLY', 'PLY Engine'], defaultValue: 'threejs', tooltip: 'Select the engine for loading PLY files.', options: ['threejs', 'fastply', 'sparkjs'], experimental: true },
+};

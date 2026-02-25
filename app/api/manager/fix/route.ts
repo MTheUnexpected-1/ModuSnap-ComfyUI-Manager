@@ -2,22 +2,12 @@ import { NextResponse } from 'next/server';
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import fs from 'node:fs';
-import { BACKEND_URL, isBackendUp, restartBackendDetached } from '../../_lib/backendControl';
-
-function resolveBackendDir() {
-  const fallback = path.resolve(process.cwd(), 'backend-comfyui');
-  const candidates = [
-    fallback,
-    path.resolve(process.cwd(), '..', '..', 'backend-comfyui'),
-    path.resolve(process.cwd(), '..', '..', '..', 'backend-comfyui'),
-  ];
-  return candidates.find((candidate) => fs.existsSync(candidate)) || fallback;
-}
+import { BACKEND_URL, isBackendUp, resolveBackendDir, restartBackendDetached } from '../../_lib/backendControl';
 
 function runPython(backendDir: string, args: string[]) {
   const venvPython = path.join(backendDir, 'venv', 'bin', 'python');
   if (!fs.existsSync(venvPython)) {
-    return { ok: false, output: 'backend-comfyui/venv missing', status: 1 };
+    return { ok: false, output: `venv missing at ${venvPython}`, status: 1 };
   }
 
   const proc = spawnSync(venvPython, args, {

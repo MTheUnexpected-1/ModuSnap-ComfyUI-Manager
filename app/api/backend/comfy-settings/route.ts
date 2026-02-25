@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { COMFY_DEFAULT_CATALOG } from '../../../../lib/settings/comfyDefaultCatalog';
-
-const BACKEND_URL = 'http://localhost:8188';
+import { BACKEND_URL } from '../../_lib/backendControl';
 const SETTINGS_CATALOG_CACHE_TTL_MS = 5 * 60 * 1000;
 
 type SettingCatalogEntry = {
