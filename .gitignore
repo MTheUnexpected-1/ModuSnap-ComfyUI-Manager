@@ -1,3 +1,7 @@
 __pycache__/
 *.pyc
 .DS_Store
+
+web-migrated/.next/
+web-migrated/node_modules/
+web-migrated/next-env.d.ts

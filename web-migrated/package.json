@@ -1,0 +1,25 @@
+{
+  "name": "modusnap-comfyui-manager-web",
+  "version": "0.1.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3002 -H 0.0.0.0",
+    "build": "next build",
+    "start": "next start --port 3002 -H 0.0.0.0",
+    "check-types": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.1.5",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "lucide-react": "^0.575.0"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "*",
+    "@types/node": "^22.15.3",
+    "@types/react": "19.2.2",
+    "@types/react-dom": "19.2.2",
+    "typescript": "5.9.2"
+  }
+}
