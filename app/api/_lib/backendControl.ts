@@ -40,6 +40,7 @@ function backendNotFound(checked: string[]): BackendResolutionFailure {
     instructions: [
       'export MODUSNAP_BACKEND_DIR=/absolute/path/to/ComfyUI\\ Backend',
       'preferred: ../ComfyUI Backend',
+      'canonical fallback: ./ModuSnap-ComfyUI-Backend, ../ModuSnap-ComfyUI-Backend, or ../../ModuSnap-ComfyUI-Backend',
       'legacy fallback: ./backend-comfyui, ../backend-comfyui, or ../../backend-comfyui',
     ],
   };
@@ -76,6 +77,12 @@ export function resolveBackendDirResult(): BackendResolutionResult {
     path.resolve(root, '..', 'ComfyUI Backend'),
     path.resolve(root, 'ComfyUI Backend'),
     path.resolve(root, '..', '..', 'ComfyUI Backend'),
+    // Current Canonical Paths
+    path.resolve(root, 'ModuSnap-ComfyUI-Backend'),
+    path.resolve(root, '..', 'ModuSnap-ComfyUI-Backend'),
+    path.resolve(root, '..', '..', 'ModuSnap-ComfyUI-Backend'),
+
+    // Legacy Paths
     path.resolve(root, 'backend-comfyui'),
     path.resolve(root, '..', 'backend-comfyui'),
     path.resolve(root, '..', '..', 'backend-comfyui'),

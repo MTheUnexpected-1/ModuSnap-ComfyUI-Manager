@@ -32,6 +32,7 @@ type EnvTx = {
   snapshotBefore?: string | null;
   snapshotAfter?: string | null;
   error?: string | null;
+  policies?: string[];
 };
 
 type Store = {
@@ -98,7 +99,7 @@ function runPython(backendDir: string, args: string[]): EnvStep {
       command: `python ${args.join(' ')}`,
       ok: false,
       status: 1,
-      output: 'backend-comfyui/venv missing',
+      output: 'ComfyUI backend/venv missing',
       startedAt,
       finishedAt,
     };
@@ -181,16 +182,16 @@ export function getEnvStatus() {
     transactions: store.transactions.length,
     latestTransaction: latest
       ? {
-          id: latest.id,
-          status: latest.status,
-          kind: latest.kind,
-          updatedAt: latest.updatedAt,
-        }
+        id: latest.id,
+        status: latest.status,
+        kind: latest.kind,
+        updatedAt: latest.updatedAt,
+      }
       : null,
   };
 }
 
-export function createPlan(input: { mode?: string; packages?: unknown }) {
+export function createPlan(input: { mode?: string; packages?: unknown; policies?: string[] }) {
   const mode = input.mode === 'install' ? 'install' : 'repair';
   const requestedPackages = sanitizePackages(input.packages);
   const tx: EnvTx = {
@@ -203,6 +204,7 @@ export function createPlan(input: { mode?: string; packages?: unknown }) {
     planCommands: buildPlan(mode, requestedPackages),
     steps: [],
     error: null,
+    policies: input.policies || [],
   };
   const store = readStore();
   store.transactions.push(tx);

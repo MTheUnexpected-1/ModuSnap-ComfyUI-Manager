@@ -1,18 +1,17 @@
 import { NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
+import { resolveBackendDir } from '../../_lib/backendControl';
 
 const BACKEND_URL = 'http://localhost:8188';
 
 function resolveCustomNodesDir() {
-  const fallback = path.resolve(process.cwd(), 'backend-comfyui', 'custom_nodes');
-  const candidates = [
-    fallback,
-    path.resolve(process.cwd(), '..', '..', 'backend-comfyui', 'custom_nodes'),
-    path.resolve(process.cwd(), '..', '..', '..', 'backend-comfyui', 'custom_nodes'),
-  ];
-
-  return candidates.find((candidate) => fs.existsSync(candidate)) || fallback;
+  try {
+    const backendDir = resolveBackendDir();
+    return path.join(backendDir, 'custom_nodes');
+  } catch {
+    return path.resolve(process.cwd(), 'backend-comfyui', 'custom_nodes');
+  }
 }
 
 function listLocalCustomNodeDirs(customNodesDir: string) {

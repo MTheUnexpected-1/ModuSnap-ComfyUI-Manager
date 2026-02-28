@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { resolveBackendDir } from '../../_lib/backendControl';
 
 type CatalogItem = {
   id?: string;
@@ -14,16 +15,6 @@ type DependencyItem = {
   name: string;
   version: string;
 };
-
-function resolveBackendDir() {
-  const fallback = path.resolve(process.cwd(), 'backend-comfyui');
-  const candidates = [
-    fallback,
-    path.resolve(process.cwd(), '..', '..', 'backend-comfyui'),
-    path.resolve(process.cwd(), '..', '..', '..', 'backend-comfyui'),
-  ];
-  return candidates.find((candidate) => fs.existsSync(candidate)) || fallback;
-}
 
 function getCompatibilitySetPath(backendDir: string) {
   return path.join(backendDir, 'user', 'modusnap_compatible_hardware_set.json');
@@ -138,7 +129,7 @@ function runCatalogAudit(backendDir: string, items: CatalogItem[]) {
 function runPython(backendDir: string, args: string[]) {
   const pythonBin = path.join(backendDir, 'venv', 'bin', 'python');
   if (!fs.existsSync(pythonBin)) {
-    return { ok: false, output: 'backend-comfyui/venv missing', status: 1 };
+    return { ok: false, output: 'ComfyUI backend venv missing', status: 1 };
   }
   const proc = spawnSync(pythonBin, args, {
     cwd: backendDir,

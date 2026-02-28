@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { resolveBackendDir } from '../../_lib/backendControl';
+import { NodeLicensePolicy, evaluatePolicy } from '../../_lib/policy';
 
 type CatalogItem = {
   id?: string;
@@ -13,16 +15,6 @@ type CatalogItem = {
   files?: string[];
   [key: string]: any;
 };
-
-function resolveBackendDir() {
-  const fallback = path.resolve(process.cwd(), 'backend-comfyui');
-  const candidates = [
-    fallback,
-    path.resolve(process.cwd(), '..', '..', 'backend-comfyui'),
-    path.resolve(process.cwd(), '..', '..', '..', 'backend-comfyui'),
-  ];
-  return candidates.find((candidate) => fs.existsSync(candidate)) || fallback;
-}
 
 function readHardwareProfile(backendDir: string) {
   const profilePath = path.join(backendDir, '.torch_profile');
@@ -64,10 +56,31 @@ function getTextBlob(item: CatalogItem) {
     .toLowerCase();
 }
 
-function assessItem(item: CatalogItem, hw: ReturnType<typeof readHardwareProfile>) {
+function assessItem(
+  item: CatalogItem,
+  hw: ReturnType<typeof readHardwareProfile>,
+  userTier: string
+) {
   const text = getTextBlob(item);
   const reasons: string[] = [];
   let decision: 'installable' | 'warning' | 'blocked' = 'installable';
+
+  // Extract simulated policies based on text content since remote catalog schema might lack it.
+  const policies: NodeLicensePolicy[] = [];
+  if (text.includes('non-commercial') || text.includes('nc only') || text.includes('educational')) {
+    policies.push('non-commercial');
+  } else if (text.match(/\b(commercial|pro|enterprise)\b/i)) {
+    // If text specifically says commercial, simulate a commercial pack policy
+    policies.push('commercial');
+  } else {
+    policies.push('open');
+  }
+
+  const evalRes = evaluatePolicy(userTier, policies);
+  if (!evalRes.allowed) {
+    reasons.push(`License Policy Violation: Pack contains restricted policies (${evalRes.violations.join(', ')}). Your current tier (${userTier}) does not permit installation.`);
+    decision = 'blocked';
+  }
 
   const cudaOnlyMarkers = /(cuda-only|requires cuda|nvidia-only|requires nvidia|tensorrt required|triton required)/i;
   const rocmOnlyMarkers = /(rocm-only|requires rocm|hip required)/i;
@@ -77,7 +90,7 @@ function assessItem(item: CatalogItem, hw: ReturnType<typeof readHardwareProfile
     decision = 'blocked';
   } else if (!hw.hasNvidia && /(cuda|nvidia|tensorrt|cu12|cu11)/i.test(text)) {
     reasons.push('Pack metadata suggests NVIDIA/CUDA dependencies, but NVIDIA hardware is not detected.');
-    decision = 'warning';
+    if (decision !== 'blocked') decision = 'warning';
   }
   if (!hw.hasRocm && rocmOnlyMarkers.test(text)) {
     reasons.push('Pack appears to require ROCm runtime and is marked as ROCm-only.');
@@ -111,8 +124,9 @@ export async function POST(request: Request) {
     const backendDir = resolveBackendDir();
     const hw = readHardwareProfile(backendDir);
     const baseline = pipCheck(backendDir);
+    const userTier = process.env.MODUSNAP_LICENSE_TIER || 'free';
 
-    const perItem = items.map((item) => assessItem(item, hw));
+    const perItem = items.map((item) => assessItem(item, hw, userTier));
     const warning = perItem.filter((row) => row.decision === 'warning').length;
     const blocked = perItem.filter((row) => row.decision === 'blocked').length;
     const installable = perItem.length - warning - blocked;

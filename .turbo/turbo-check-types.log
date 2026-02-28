@@ -1,0 +1,6 @@
+
+> modusnap-comfyui-manager-web@0.1.0 check-types
+> next typegen && tsc --noEmit
+
+Generating route types...
+✓ Types generated successfully

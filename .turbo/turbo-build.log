@@ -1,0 +1,16 @@
+
+> modusnap-comfyui-manager-web@0.1.0 build
+> next build
+
+▲ Next.js 16.1.5 (Turbopack)
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.6s
+  Running TypeScript ...
+npm error Lifecycle script `build` failed with error:
+npm error code 130
+npm error path /Users/mtheunexpected/Library/Mobile Documents/com~apple~CloudDocs/ComfyUi Project/ModuSnap-Latest/ModuSnap-Core/apps/ModuSnap-ComfyUI-Manager
+npm error workspace modusnap-comfyui-manager-web@0.1.0
+npm error location /Users/mtheunexpected/Library/Mobile Documents/com~apple~CloudDocs/ComfyUi Project/ModuSnap-Latest/ModuSnap-Core/apps/ModuSnap-ComfyUI-Manager
+npm error command failed
+npm error command sh -c next build
