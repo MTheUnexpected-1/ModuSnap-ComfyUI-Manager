@@ -65,12 +65,12 @@ function assessItem(
   const reasons: string[] = [];
   let decision: 'installable' | 'warning' | 'blocked' = 'installable';
 
-  // Extract simulated policies based on text content since remote catalog schema might lack it.
+  // Extract inferred policies based on text content since remote catalog schema might lack it.
   const policies: NodeLicensePolicy[] = [];
   if (text.includes('non-commercial') || text.includes('nc only') || text.includes('educational')) {
     policies.push('non-commercial');
   } else if (text.match(/\b(commercial|pro|enterprise)\b/i)) {
-    // If text specifically says commercial, simulate a commercial pack policy
+    // If text specifically says commercial, infer a commercial pack policy
     policies.push('commercial');
   } else {
     policies.push('open');
